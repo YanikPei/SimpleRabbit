@@ -1,4 +1,4 @@
-export default class QueuePublisherMessage {
+export class QueuePublisherMessage {
     exchange: string;
     routingKey: string;
     message: object;

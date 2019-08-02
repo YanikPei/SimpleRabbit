@@ -1,6 +1,6 @@
 var UUID = require('uuid-js');
 
-export default class QueueRPCMessage {
+export class QueueRPCMessage {
     callbackQueue: string;
     exchange: string;
     routingKey: string;
