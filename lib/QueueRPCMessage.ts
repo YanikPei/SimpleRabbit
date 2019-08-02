@@ -13,6 +13,7 @@ export default class QueueRPCMessage {
         this.routingKey = routingKey;
         this.queueCon = queueCon;
         this.message = message;
+        this.callbackQueue = "";
         this.correlation_id = UUID.create(4).toString();
 
         if(!('tennantID' in this.message)) {
