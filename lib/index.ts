@@ -1,5 +1,5 @@
 const amqp = require('amqplib');
-import QueueSubscribtion from './QueueSubscription';
+import {QueueSubscribtion} from './QueueSubscription';
 
 export * from "./QueuePublisherMessage";
 export * from "./QueueRPCMessage";
