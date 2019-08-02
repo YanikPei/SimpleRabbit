@@ -4,8 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "postinstall": "tsc"
   },
   "author": "Yanik Peiffer <mail@ypeiffer.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^12.6.9",
+    "amqplib": "^0.5.5",
+    "uuid-js": "^0.7.5"
+  }
 }
