@@ -1,0 +1,1 @@
+{"version":3,"file":"QueueSubscription.d.ts","sourceRoot":"","sources":["../lib/QueueSubscription.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,iBAAiB;IAC9B,QAAQ,EAAE,MAAM,CAAC;IACjB,KAAK,EAAE,MAAM,CAAC;IACd,IAAI,EAAE,CAAC,GAAG,KAAA,KAAK,OAAO,CAAC,GAAG,CAAC,CAAC;IAC5B,OAAO,CAAC,EAAE,OAAO,CAAC;CACrB"}

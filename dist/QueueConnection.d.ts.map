@@ -1,0 +1,1 @@
+{"version":3,"file":"QueueConnection.d.ts","sourceRoot":"","sources":["../lib/QueueConnection.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,qBAAqB,CAAC;AAGxD,qBAAa,eAAe;IACxB,QAAQ,MAAC;IACT,KAAK,EAAE,MAAM,CAAC;gBAEF,KAAK,EAAE,MAAM,EAAE,WAAW,EAAE,MAAM;IAK9C,eAAe,CAAC,WAAW,EAAE,iBAAiB,EAAE;CAqCnD"}

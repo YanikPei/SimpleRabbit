@@ -1,0 +1,1 @@
+{"version":3,"file":"QueueVhost.d.ts","sourceRoot":"","sources":["../lib/QueueVhost.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AAEpD,MAAM,WAAW,UAAU;IACvB,IAAI,EAAE,MAAM,CAAC;IACb,GAAG,EAAE,MAAM,CAAC;IACZ,UAAU,EAAE,eAAe,CAAC;CAC/B"}
