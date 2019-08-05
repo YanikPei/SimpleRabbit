@@ -17,6 +17,8 @@ export class QueueClient {
      * @param subscribeTo 
      */
     connect(subscribeTo: QueueSubscribtion[]) {
+        if(this.vhostURLs.length <= 0) throw 'Please provide at least one vhost url';
+        
         this.vhostURLs.forEach((vhostURL) => {
 
             // create connection
@@ -109,7 +111,7 @@ export class QueueClient {
                                 const msgJson = JSON.parse(msg.content.toString());
                                 console.log('Response: ' + JSON.stringify(msg));
                                 ch.close();
-                                
+
                                 return new Promise(() => {
                                     return msgJson;
                                 });
