@@ -5,9 +5,9 @@ export class QueueConnection {
     queueCon;
     vhost: string;
 
-    constructor(vhost: string, queueServer: string) {
+    constructor(queueServer: string, vhost?: string) {
         this.queueCon = amqp.connect(process.env.QUEUE_SERVER);
-        this.vhost = vhost;
+        this.vhost = vhost || "";
     }
 
     initSubscribers(subscribeTo: QueueSubscribtion[]) {
