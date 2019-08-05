@@ -2,6 +2,8 @@ import { QueueSubscribtion } from './QueueSubscription';
 import { QueueVhost } from './QueueVhost';
 export declare class QueueClient {
     vhosts: QueueVhost[];
+    vhostURLs: string[];
+    constructor(vhostURLs: any);
     /**
      * Connect to all available vhosts
      * @param subscribeTo

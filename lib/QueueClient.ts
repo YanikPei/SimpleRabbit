@@ -4,19 +4,20 @@ import { QueueSubscribtion } from './QueueSubscription';
 import { QueueVhost } from './QueueVhost';
 import { QueueConnection } from './QueueConnection';
 
-const vhostURLs = [
-    'amqp://energierevolte:test12345@212.227.206.129/test',
-];
-
 export class QueueClient {
     vhosts: QueueVhost[] = [];
+    vhostURLs: string[] = [];
+
+    constructor(vhostURLs) {
+        this.vhostURLs = vhostURLs;
+    }
 
     /**
      * Connect to all available vhosts
      * @param subscribeTo 
      */
     connect(subscribeTo: QueueSubscribtion[]) {
-        vhostURLs.forEach((vhostURL) => {
+        this.vhostURLs.forEach((vhostURL) => {
 
             // create connection
             const vhostArr = vhostURL.split('/');

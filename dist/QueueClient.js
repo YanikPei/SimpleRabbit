@@ -2,19 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var UUID = require('uuid-js');
 const QueueConnection_1 = require("./QueueConnection");
-const vhostURLs = [
-    'amqp://energierevolte:test12345@212.227.206.129/test',
-];
 class QueueClient {
-    constructor() {
+    constructor(vhostURLs) {
         this.vhosts = [];
+        this.vhostURLs = [];
+        this.vhostURLs = vhostURLs;
     }
     /**
      * Connect to all available vhosts
      * @param subscribeTo
      */
     connect(subscribeTo) {
-        vhostURLs.forEach((vhostURL) => {
+        this.vhostURLs.forEach((vhostURL) => {
             // create connection
             const vhostArr = vhostURL.split('/');
             const vhostName = vhostArr[vhostArr.length - 1];
