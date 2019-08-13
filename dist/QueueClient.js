@@ -13,6 +13,8 @@ class QueueClient {
      * @param subscribeTo
      */
     connect(subscribeTo) {
+        if (this.vhostURLs.length <= 0)
+            throw 'Please provide at least one vhost url';
         this.vhostURLs.forEach((vhostURL) => {
             // create connection
             const vhostArr = vhostURL.split('/');
@@ -84,8 +86,12 @@ class QueueClient {
                     // listen for callback
                     ch.consume(q.queue, (msg) => {
                         if (msg.properties.correlationId == correlationID) {
+                            const msgJson = JSON.parse(msg.content.toString());
                             console.log('Response: ' + JSON.stringify(msg));
                             ch.close();
+                            return new Promise(() => {
+                                return msgJson;
+                            });
                         }
                     }, {
                         noAck: true

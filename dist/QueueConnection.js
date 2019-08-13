@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const amqp = require('amqplib');
 class QueueConnection {
-    constructor(vhost, queueServer) {
+    constructor(queueServer, vhost) {
         this.queueCon = amqp.connect(process.env.QUEUE_SERVER);
-        this.vhost = vhost;
+        this.vhost = vhost || "";
     }
     initSubscribers(subscribeTo) {
         this.queueCon.then((con) => {

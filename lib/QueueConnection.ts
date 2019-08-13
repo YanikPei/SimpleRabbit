@@ -10,8 +10,34 @@ export class QueueConnection {
         this.vhost = vhost || "";
     }
 
-    initSubscribers(subscribeTo: QueueSubscribtion[]) {
+    async initSubscribers(subscribeTo: QueueSubscribtion[]) {
 
+        const con = await this.queueCon;
+        const ch = await con.createChannel();
+
+        subscribeTo.forEach(async (sub) => {
+    
+            await ch.assertExchange(sub.exchange, 'topic', { durable: false });
+            const qok = await ch.assertQueue(sub.topic, { autoDelete: true });
+            ch.bindQueue(qok.queue, sub.exchange, sub.topic);
+            ch.consume(qok.queue, async (msg) => {
+
+                const msgJson = JSON.parse(msg.content.toString());
+                msgJson['vhost'] = this.vhost;
+
+                const res = await sub.func(msgJson)
+                    
+                if(msg.properties.replyTo) {
+                    ch.sendToQueue(msg.properties.replyTo, new Buffer(JSON.stringify(res)), {
+                        correlationId: msg.properties.correlationId
+                    });
+                }
+
+            }, { noAck: true });
+
+        })
+
+    /*
         this.queueCon.then((con) => {
             con.createChannel().then((ch) => {
     
@@ -45,6 +71,8 @@ export class QueueConnection {
     
             })
         });
+
+        */
     
     }
 };
