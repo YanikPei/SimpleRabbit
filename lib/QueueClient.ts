@@ -57,29 +57,19 @@ export class QueueClient {
      * @param message 
      * @param vhost 
      */
-    publishMessage(exchange: string, routingKey: string, message: object, vhost?: string) {
+    async publishMessage(exchange: string, routingKey: string, message: object, vhost?: string) {
         let vhostConn = this.vhosts[0].connection.queueCon;
 
         if(vhost) {
             vhostConn = this.getVhostConnection(vhost);
         }
-        
 
-        return vhostConn.then((con) => {
-            return con.createChannel().then((ch) => {
-                ch.assertExchange(exchange, 'topic', { durable: false })
-                    .then(() => {
-                        ch.publish(
-                            exchange,
-                            routingKey,
-                            Buffer.from(JSON.stringify(message)),
-                            {}
-                        );
-
-                        return ch.close();
-                    })
-            });
-        });
+        const con = await vhostConn;
+        const ch = con.createChannel();
+        await ch.assertExchange(exchange, 'topic', { durable: false });
+                
+        ch.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {});
+        ch.close();
     }
 
     /**
@@ -89,53 +79,41 @@ export class QueueClient {
      * @param message 
      * @param vhost 
      */
-    publishRPCMessage(exchange: string, routingKey: string, message: object, vhost?: string) {
+    async publishRPCMessage(exchange: string, routingKey: string, message: object, vhost?: string) {
         const correlationID = UUID.create(4).toString();
         let vhostConn = this.vhosts[0].connection.queueCon;
 
         if(vhost) {
             vhostConn = this.getVhostConnection(vhost);
-        }
-        
+        } 
 
-        return vhostConn.then((con) => {
-            return con.createChannel().then((ch) => {
-                ch.assertQueue('', {
-                    exclusive: true
-                })
-                    .then((q) => {
+        const con = await vhostConn;
+        const ch = await con.createChannel();
+        const q = await ch.assertQueue('', {exclusive: true});
+                    
+        // listen for callback
+        ch.consume(q.queue, (msg) => {
+            if (msg.properties.correlationId == correlationID) {
+                const msgJson = JSON.parse(msg.content.toString());
+                console.log('Response: ' + JSON.stringify(msgJson));
+                ch.close();
 
-                        // listen for callback
-                        ch.consume(q.queue, (msg) => {
-                            if (msg.properties.correlationId == correlationID) {
-                                const msgJson = JSON.parse(msg.content.toString());
-                                console.log('Response: ' + JSON.stringify(msg));
-                                ch.close();
-
-                                return new Promise(() => {
-                                    return msgJson;
-                                });
-                            }
-                        }, {
-                                noAck: true
-                            });
+                return msgJson;
+            }
+        }, {noAck: true});
 
 
-                        // send message
-                        ch.assertExchange(exchange, 'topic', { durable: false })
-                            .then(() => {
-                                ch.publish(
-                                    exchange,
-                                    routingKey,
-                                    Buffer.from(JSON.stringify(message)),
-                                    {
-                                        correlationId: correlationID,
-                                        replyTo: q.queue
-                                    }
-                                );
-                            });
-                    })
-            });
-        })
+        // send message
+        await ch.assertExchange(exchange, 'topic', { durable: false })
+        ch.publish(
+            exchange,
+            routingKey,
+            Buffer.from(JSON.stringify(message)),
+            {
+                correlationId: correlationID,
+                replyTo: q.queue
+            }
+        );
+            
     }
 }
