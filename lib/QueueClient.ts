@@ -64,12 +64,12 @@ export class QueueClient {
             vhostConn = this.getVhostConnection(vhost);
         }
 
-        const con = await vhostConn;
-        const ch = con.createChannel();
-        await ch.assertExchange(exchange, 'topic', { durable: false });
+        const connection = await vhostConn;
+        const channel = connection.createChannel();
+        await channel.assertExchange(exchange, 'topic', { durable: false });
                 
-        ch.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {});
-        ch.close();
+        channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {});
+        channel.close();
     }
 
     /**
@@ -87,16 +87,16 @@ export class QueueClient {
             vhostConn = this.getVhostConnection(vhost);
         } 
 
-        const con = await vhostConn;
-        const ch = await con.createChannel();
-        const q = await ch.assertQueue('', {exclusive: true});
+        const connection = await vhostConn;
+        const channel = await connection.createChannel();
+        const queue = await channel.assertQueue('', {exclusive: true});
                     
         // listen for callback
-        ch.consume(q.queue, (msg) => {
+        channel.consume(queue.queue, (msg) => {
             if (msg.properties.correlationId == correlationID) {
                 const msgJson = JSON.parse(msg.content.toString());
                 console.log('Response: ' + JSON.stringify(msgJson));
-                ch.close();
+                channel.close();
 
                 return msgJson;
             }
@@ -104,14 +104,14 @@ export class QueueClient {
 
 
         // send message
-        await ch.assertExchange(exchange, 'topic', { durable: false })
-        ch.publish(
+        await channel.assertExchange(exchange, 'topic', { durable: false })
+        channel.publish(
             exchange,
             routingKey,
             Buffer.from(JSON.stringify(message)),
             {
                 correlationId: correlationID,
-                replyTo: q.queue
+                replyTo: queue.queue
             }
         );
             
