@@ -65,7 +65,7 @@ export class QueueClient {
         }
 
         const connection = await vhostConn;
-        const channel = connection.createChannel();
+        const channel = await connection.createChannel();
         await channel.assertExchange(exchange, 'topic', { durable: false });
                 
         channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {});
