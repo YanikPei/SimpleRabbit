@@ -79,7 +79,7 @@ export class QueueClient {
      * @param message 
      * @param vhost 
      */
-    async publishRPCMessage(exchange: string, routingKey: string, message: object, vhost?: string) {
+    async publishRPCMessage(exchange: string, routingKey: string, message: object, callback: (msg) => void, vhost?: string): Promise<Object> {
         const correlationID = UUID.create(4).toString();
         let vhostConn = this.vhosts[0].connection.queueCon;
 
@@ -90,18 +90,6 @@ export class QueueClient {
         const connection = await vhostConn;
         const channel = await connection.createChannel();
         const queue = await channel.assertQueue('', {exclusive: true});
-                    
-        // listen for callback
-        channel.consume(queue.queue, (msg) => {
-            if (msg.properties.correlationId == correlationID) {
-                const msgJson = JSON.parse(msg.content.toString());
-                console.log('Response: ' + JSON.stringify(msgJson));
-                channel.close();
-
-                return msgJson;
-            }
-        }, {noAck: true});
-
 
         // send message
         await channel.assertExchange(exchange, 'topic', { durable: false })
@@ -114,6 +102,17 @@ export class QueueClient {
                 replyTo: queue.queue
             }
         );
+
+        // listen for callback
+        return await channel.consume(queue.queue, (msg) => {
+            if (msg.properties.correlationId == correlationID) {
+                const msgJson = JSON.parse(msg.content.toString());
+                console.log('Response: ' + JSON.stringify(msgJson));
+                channel.close();
+
+                callback(msgJson);
+            }
+        }, {noAck: true});
             
     }
 }

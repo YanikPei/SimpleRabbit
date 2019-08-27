@@ -12,9 +12,15 @@ export class QueueConnection {
 
     async consumeMessage(msg, channel, subscription) {
         const msgJson = JSON.parse(msg.content.toString());
+        let res = null;
         msgJson['vhost'] = this.vhost;
 
-        const res = await subscription.func(msgJson)
+        try {
+            res = await subscription.func(msgJson)
+        } catch(e) {
+            console.log('ERROR 1');
+            res = e;
+        };
             
         if(msg.properties.replyTo) {
             channel.sendToQueue(msg.properties.replyTo, new Buffer(JSON.stringify(res)), {
