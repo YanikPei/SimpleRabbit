@@ -107,7 +107,6 @@ export class QueueClient {
         return await channel.consume(queue.queue, (msg) => {
             if (msg.properties.correlationId == correlationID) {
                 const msgJson = JSON.parse(msg.content.toString());
-                console.log('Response: ' + JSON.stringify(msgJson));
                 channel.close();
 
                 callback(msgJson);

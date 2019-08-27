@@ -18,12 +18,11 @@ export class QueueConnection {
         try {
             res = await subscription.func(msgJson)
         } catch(e) {
-            console.log('ERROR 1');
             res = e;
         };
             
         if(msg.properties.replyTo) {
-            channel.sendToQueue(msg.properties.replyTo, new Buffer(JSON.stringify(res)), {
+            channel.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify(res)), {
                 correlationId: msg.properties.correlationId
             });
         }
