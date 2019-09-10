@@ -60,6 +60,8 @@ export class QueueClient {
     async publishMessage(exchange: string, routingKey: string, message: object, vhost?: string) {
         let vhostConn = this.vhosts[0].connection.queueCon;
 
+        if(!this.validateMessage(message)) return false;
+
         if(vhost) {
             vhostConn = this.getVhostConnection(vhost);
         }
@@ -83,9 +85,11 @@ export class QueueClient {
         const correlationID = UUID.create(4).toString();
         let vhostConn = this.vhosts[0].connection.queueCon;
 
+        if(!this.validateMessage(message)) return false;
+
         if(vhost) {
             vhostConn = this.getVhostConnection(vhost);
-        } 
+        }
 
         const connection = await vhostConn;
         const channel = await connection.createChannel();
@@ -95,7 +99,6 @@ export class QueueClient {
         channel.consume(queue.queue, (msg) => {
             if (msg.properties.correlationId == correlationID) {
                 const msgJson = JSON.parse(msg.content.toString());
-                console.log('Response: ' + JSON.stringify(msgJson));
                 channel.close();
 
                 return msgJson;
@@ -115,5 +118,12 @@ export class QueueClient {
             }
         );
             
+    }
+
+    validateMessage(message) {
+        let error = false;
+        if (!("tenantID" in message)) error = true;
+
+        return !error;
     }
 }
