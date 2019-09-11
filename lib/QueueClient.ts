@@ -3,6 +3,7 @@ var UUID = require('uuid-js');
 import { QueueSubscribtion } from './QueueSubscription';
 import { QueueVhost } from './QueueVhost';
 import { QueueConnection } from './QueueConnection';
+import e = require('express');
 
 export class QueueClient {
     vhosts: QueueVhost[] = [];
@@ -60,7 +61,11 @@ export class QueueClient {
     async publishMessage(exchange: string, routingKey: string, message: object, vhost?: string) {
         let vhostConn = this.vhosts[0].connection.queueCon;
 
-        if(!this.validateMessage(message)) return false;
+        try {
+            this.validateMessage(message);
+        } catch(e) {
+            throw e;
+        }
 
         if(vhost) {
             vhostConn = this.getVhostConnection(vhost);
@@ -85,7 +90,11 @@ export class QueueClient {
         const correlationID = UUID.create(4).toString();
         let vhostConn = this.vhosts[0].connection.queueCon;
 
-        if(!this.validateMessage(message)) return false;
+        try {
+            this.validateMessage(message);
+        } catch(e) {
+            throw e;
+        }     
 
         if(vhost) {
             vhostConn = this.getVhostConnection(vhost);
@@ -121,7 +130,7 @@ export class QueueClient {
 
     validateMessage(message) {
         let error = false;
-        if (!("tenantID" in message)) error = true;
+        if (!("tenantID" in message)) throw "TenantID is required";
 
         return !error;
     }
