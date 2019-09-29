@@ -5,10 +5,12 @@ const amqp = require('amqplib');
 export class QueueConnection {
     queueCon;
     vhost: string;
+    applicationID: string;
 
-    constructor(queueServer: string, vhost?: string) {
+    constructor(queueServer: string, applicationID: string, vhost?: string) {
         this.queueCon = amqp.connect(process.env.QUEUE_SERVER);
         this.vhost = vhost || "";
+        this.applicationID = applicationID;
     }
 
     async consumeMessage(msg, channel, subscription) {
@@ -56,7 +58,7 @@ export class QueueConnection {
         subscribeTo.forEach(async (sub) => {
     
             await channel.assertExchange(sub.exchange, 'topic', { durable: false });
-            const assertedQueue = await channel.assertQueue(sub.topic, { autoDelete: true });
+            const assertedQueue = await channel.assertQueue(this.applicationID + '_' + sub.topic, { autoDelete: true });
             channel.bindQueue(assertedQueue.queue, sub.exchange, sub.topic);
             channel.consume(assertedQueue.queue, (msg) => this.consumeMessage(msg, channel, sub), { noAck: true });
 

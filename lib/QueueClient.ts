@@ -8,9 +8,11 @@ import e = require('express');
 export class QueueClient {
     vhosts: QueueVhost[] = [];
     vhostURLs: string[] = [];
+    applicationID: string;
 
-    constructor(vhostURLs) {
+    constructor(vhostURLs, applicationID) {
         this.vhostURLs = vhostURLs;
+        this.applicationID = applicationID;
     }
 
     /**
@@ -28,7 +30,7 @@ export class QueueClient {
             const vhost: QueueVhost = {
                 name: vhostName,
                 url: vhostURL,
-                connection: new QueueConnection(vhostName, vhostURL),
+                connection: new QueueConnection(vhostName, this.applicationID, vhostURL),
             }
             this.vhosts.push(vhost);
 
