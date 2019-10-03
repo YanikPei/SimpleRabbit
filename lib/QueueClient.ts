@@ -122,6 +122,7 @@ export class QueueClient {
         return await channel.consume(queue.queue, (msg) => {
             if (msg.properties.correlationId == correlationID) {
                 const msgJson = JSON.parse(msg.content.toString());
+                channel.deleteQueue(queue.queue);
                 channel.close();
 
                 callback(msgJson);
