@@ -119,11 +119,11 @@ export class QueueClient {
         );
 
         // listen for callback
-        return await channel.consume(queue.queue, (msg) => {
+        return await channel.consume(queue.queue, async (msg) => {
             if (msg.properties.correlationId == correlationID) {
                 const msgJson = JSON.parse(msg.content.toString());
-                channel.deleteQueue(queue.queue);
-                channel.close();
+                await channel.deleteQueue(queue.queue);
+                await channel.close();
 
                 callback(msgJson);
             }
