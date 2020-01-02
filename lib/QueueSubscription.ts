@@ -1,6 +1,8 @@
 export interface QueueSubscribtion {
     exchange: string;
     topic: string;
-    func: (msg) => Promise<any>;
+    func: (msg, headers?, fields?) => Promise<any>;
     replyTo?: boolean;
+    durable?: boolean;
+    internal?: boolean;
 };

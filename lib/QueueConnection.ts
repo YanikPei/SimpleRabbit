@@ -16,10 +16,14 @@ export class QueueConnection {
     async consumeMessage(msg, channel, subscription) {
         const msgJson = JSON.parse(msg.content.toString());
         let res = {};
+        let headers = null;
+        let fields = null;
         msgJson['vhost'] = this.vhost;
 
         try {
-            res = await subscription.func(msgJson)
+            headers = msg.properties.headers ? msg.properties.headers : null;
+            fields = msg.field ? msg.fields : null;
+            res = await subscription.func(msgJson, headers, fields);
         } catch(e) {
             res = e;
         };
@@ -43,7 +47,7 @@ export class QueueConnection {
             return;
         }
             
-        if(msg.properties.replyTo) {
+        if(msg.properties.replyTo && !subscription.internal) {
             channel.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify(res)), {
                 correlationId: msg.properties.correlationId
             });
@@ -56,8 +60,10 @@ export class QueueConnection {
         const channel = await connection.createChannel();
 
         subscribeTo.forEach(async (sub) => {
+            const durable = sub.durable ? sub.durable : false;
+            const internal = sub.internal ? sub.internal : false;
     
-            await channel.assertExchange(sub.exchange, 'topic', { durable: false });
+            await channel.assertExchange(sub.exchange, 'topic', { durable, internal });
             const assertedQueue = await channel.assertQueue(this.applicationID + '_' + sub.topic, { autoDelete: true });
             channel.bindQueue(assertedQueue.queue, sub.exchange, sub.topic);
             channel.consume(assertedQueue.queue, (msg) => this.consumeMessage(msg, channel, sub), { noAck: true });
