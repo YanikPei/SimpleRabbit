@@ -48,7 +48,10 @@ export class QueueConnection {
         }
             
         if(msg.properties.replyTo && !subscription.internal) {
-            channel.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify(res)), {
+            channel.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify({
+                tenantID: msgJson.tenantID ? msgJson.tenantID : -1,
+                ...res
+            })), {
                 correlationId: msg.properties.correlationId
             });
         }
