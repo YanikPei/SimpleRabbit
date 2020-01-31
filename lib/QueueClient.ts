@@ -73,12 +73,15 @@ export class QueueClient {
             vhostConn = this.getVhostConnection(vhost);
         }
 
-        const connection = await vhostConn;
-        const channel = await connection.createChannel();
-        await channel.assertExchange(exchange, 'topic', { durable: false });
-                
-        channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {});
-        channel.close();
+        try {
+            const connection = await vhostConn;
+            const channel = await connection.createChannel();
+            await channel.assertExchange(exchange, 'topic', { durable: false });
+            channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {});
+            channel.close();
+        } catch(e) {
+            throw JSON.stringify(e);
+        }
     }
 
     /**
