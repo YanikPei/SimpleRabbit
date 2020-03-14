@@ -91,7 +91,7 @@ export class QueueClient {
      * @param message 
      * @param vhost 
      */
-    async publishRPCMessage(exchange: string, routingKey: string, message: object, callback: (msg) => void, vhost?: string): Promise<Object> {
+    async publishRPCMessage(exchange: string, routingKey: string, message: object, callback?: (msg) => void, vhost?: string): Promise<Object> {
         const correlationID = UUID.create(4).toString();
         let vhostConn = this.vhosts[0].connection.queueCon;
 
@@ -122,15 +122,25 @@ export class QueueClient {
         );
 
         // listen for callback
-        return await channel.consume(queue.queue, async (msg) => {
+        let msg: any = false;
+        while(!msg) msg = await channel.get(queue.queue);
+
+        return new Promise(async (resolve, reject) => {
             if (msg && 'properties' in msg && msg.properties.correlationId == correlationID) {
                 const msgJson = JSON.parse(msg.content.toString());
                 await channel.deleteQueue(queue.queue);
                 await channel.close();
+    
+                if(callback) {
+                    callback(msgJson);
+                }
 
-                callback(msgJson);
+                resolve(msgJson);
             }
-        }, {noAck: true});
+            reject();
+        })
+
+        
             
     }
 
