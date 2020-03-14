@@ -22,6 +22,7 @@ export class QueueClient {
     connect(subscribeTo: QueueSubscribtion[]) {
         if(this.vhostURLs.length <= 0) throw 'Please provide at least one vhost url';
         
+        // support connecting to multiple vhosts
         this.vhostURLs.forEach((vhostURL) => {
 
             // create connection
