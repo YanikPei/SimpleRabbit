@@ -1,17 +1,19 @@
 {
-  "name": "rabbitmq-client",
+  "name": "simplerabbit.js",
   "version": "1.0.0",
-  "description": "",
+  "description": "Makes dealing with RabbitMQ easier",
   "main": "dist/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "postinstall": "tsc"
+    "postinstall": "tsc",
+    "prepublish": "tsc"
   },
   "author": "Yanik Peiffer <mail@ypeiffer.com>",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^12.6.9",
+    "@types/node": "^12.12.37",
     "amqplib": "^0.5.5",
     "uuid-js": "^0.7.5"
   }

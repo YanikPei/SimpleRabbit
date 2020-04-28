@@ -1,6 +1,6 @@
-# RabbitMQ Client JS
+# SimpleRabbit.js
 
-Makes dealing with RabbitMQ easier.
+🐰 Makes dealing with RabbitMQ easier.
 
 - Simply subscribe to queues
 - Supports simple and rpc messages

@@ -3,7 +3,6 @@ var UUID = require('uuid-js');
 import { QueueSubscribtion } from './QueueSubscription';
 import { QueueVhost } from './QueueVhost';
 import { QueueConnection } from './QueueConnection';
-import e = require('express');
 
 export class QueueClient {
     vhosts: QueueVhost[] = [];
